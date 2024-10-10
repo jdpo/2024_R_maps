@@ -18,7 +18,7 @@ invisible(lapply(libs, library, character.only = T))
 
 ##### Format data #####
 
-data <- read.table("C:/Users/pohlmann/Desktop/Home_Office/Projekte/2022_M185/2024_R_Gibraltar/data/station_data.csv", sep = ";", header = T)
+data <- read.table("./data/station_data.csv", sep = ";", header = T)
 
 data_new <- data %>% mutate(long_d = as.numeric(gsub("(d).*", "", long)),
                             long_m = as.numeric(gsub(".*d", "", gsub("(m).*", "", long))),
@@ -76,7 +76,7 @@ map_big <- ggplot() +
         axis.title.y = element_blank())
 
 # save big map
-ggsave("big_nice.png", map_big, path = "./maps/", width = 5, height = 6, device='png', dpi=300) 
+ggsave("big_nice.tiff", map_big, path = "./maps/", width = 5, height = 6, device='tiff', dpi=300) 
 
 
 ### plot zoomed map
@@ -129,7 +129,7 @@ map_small <- ggplot() +
         axis.text.y = element_text(face = "bold", size = 16, family = "serif"))
 
 # save zoomed map      
-ggsave("small_nice.png", map_small, path = "./maps/", width = 7.8, height = 6, device='png', dpi=300) 
+ggsave("small_nice.tiff", map_small, path = "./maps/", width = 7.8, height = 6, device='tiff', dpi=300) 
 
 
 
