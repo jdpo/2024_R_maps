@@ -19,6 +19,8 @@ invisible(lapply(libs, library, character.only = T))
 ##### Format data #####
 
 data <- read.table("./data/station_data.csv", sep = ";", header = T)
+HFR <- read.table("./data/HFR.csv", sep = ";", header = T) %>% mutate(long_dec = long_dec*-1)
+tide <- read.table("./data/tide_gauge.csv", sep = ";", header = T) %>% mutate(long_dec = long_dec*-1)
 
 data_new <- data %>% mutate(long_d = as.numeric(gsub("(d).*", "", long)),
                             long_m = as.numeric(gsub(".*d", "", gsub("(m).*", "", long))),
@@ -97,16 +99,17 @@ decimal_to_dms_W <- function(decimal_degree) {
 
 # plot map
 map_small <- ggplot() +
-  geom_raster(data = bat_small, aes(x = V1, y =V2, fill = V3), interpolate = T, show.legend = F) + #or use geom_tile without "interpolate"
+  geom_raster(data = bat_small, aes(x = V1, y =V2, fill = V3), interpolate = T) + #or use geom_tile without "interpolate"
   scale_fill_continuous(limits=c(-1500, 0), breaks = seq(-1500, 0, by= 500)) +
   #geom_path(data = data_new, aes(x = long_dec, y = lat_dec, group = station, color = catch_bin), arrow = arrow(type = "closed", length = unit(0.2, "cm")), linewidth = 0.6) +
   #scale_color_manual(values = my_col) +
   geom_sf(color = "gray25", fill = "gray90", data = countries) +
   #geom_sf(color = "black", fill = "white", data = oceans) +
+  #geom_rect(mapping = aes(xmin = min(HFR$long_dec), xmax = max(HFR$long_dec), ymin = min(HFR$lat_dec), ymax = max(HFR$lat_dec)), fill = "red", color = "transparent", alpha = 0.6) +
+  geom_point(data = tide, aes(x = long_dec, y = lat_dec), size = 7, shape = "\u2605", show.legend = F, colour = "red") +
   geom_point(data = points_end, aes(x = long_dec, y = lat_dec), size = 1.5, alpha = 0.7, shape = 16, show.legend = F, colour = "black") +
-  geom_label_repel(aes(label = station, x = long_dec, y = lat_dec), data = points_end, size = 4, fontface = "bold", box.padding = 0.5, max.overlaps = 15) +
+  geom_label_repel(aes(label = station, x = long_dec, y = lat_dec),nudge_y = -0.001, data = points_end, size = 3.2, fontface = "bold", box.padding = 0.5, max.overlaps = 20) +
   geom_point(aes(x = mean(c(max(points_start$long_dec), min(points_start$long_dec))), y = mean(c(max(points_start$lat_dec)), min(points_start$lat_dec))), shape = 1, size = 3.5, show.legend = F, colour = "black") +
-  #geom_rect(mapping = aes(xmin = min(data_new$long_dec), xmax = max(data_new$long_dec), ymin = min(data_new$lat_dec), ymax = max(data_new$lat_dec)), fill = "red", color = "transparent", alpha = 0.6) +
   #geom_ellipse(aes(x0 = mean(c(max(data_new$long_dec), min(data_new$long_dec))),
                    #y0 = mean(c(max(data_new$lat_dec), min(data_new$lat_dec))), 
                    #a = max(data_new$long_dec) - mean(c(max(data_new$long_dec), min(data_new$long_dec))), 
@@ -123,13 +126,19 @@ map_small <- ggplot() +
                          style = north_arrow_fancy_orienteering) +
   theme_bw() +
   labs(fill = "Depth (m)") +
-  theme(axis.title.x = element_blank(),
+  theme(legend.position = "right",
+        legend.text = element_text(size = 10, family = "serif",face = "bold"),
+        legend.key.size = unit(2.56, "cm"),
+        legend.key.width = unit(0.3, "cm"),
+        #legend.background = element_rect(linewidth = 0.2, fill = "white", linetype="solid", colour = "black"),
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
         axis.title.y = element_blank(),
-        axis.text.x = element_text(face = "bold", size = 16, family = "serif", , angle = 45, hjust = 1),
+        axis.text.x = element_text(face = "bold", size = 16, family = "serif", angle = 45, hjust = 1),
         axis.text.y = element_text(face = "bold", size = 16, family = "serif"))
 
 # save zoomed map      
-ggsave("small_nice.tiff", map_small, path = "./maps/", width = 7.8, height = 6, device='tiff', dpi=300) 
+ggsave("small_nice.tiff", map_small, path = "./maps/", width = 7.5, height = 6.4, device='tiff', dpi=300) 
 
 
 
