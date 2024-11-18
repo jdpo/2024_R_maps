@@ -59,7 +59,7 @@ countries <- gisco_get_countries(resolution = "01", epsg = "4326", country = c("
 bat_b <- getNOAA.bathy(-12, 4, 32, 46, res = 1, keep = TRUE, path = "./data/")
 bat_big <- as.xyz(bat_b) %>% mutate(V3 = ifelse(V3 >= 0, 0, V3))
 all_big <- as.xyz(bat_b)
-bat_s <- getNOAA.bathy(-8, -3, 33, 39, res = 0.25, keep = TRUE, path = "./data/")
+bat_s <- getNOAA.bathy(-6.1, -5.2, 35.6, 36.3, res = 0.25, keep = TRUE, path = "./data/")
 bat_small <- as.xyz(bat_s) %>% mutate(V3 = ifelse(V3 >= 0, 0, V3))
 all_small <- as.xyz(bat_s) 
 
@@ -100,7 +100,7 @@ decimal_to_dms_W <- function(decimal_degree) {
 # plot map
 map_small <- ggplot() +
   geom_raster(data = bat_small, aes(x = V1, y =V2, fill = V3), interpolate = T) + #or use geom_tile without "interpolate"
-  scale_fill_continuous(limits=c(-1500, 0), breaks = seq(-1500, 0, by= 500)) +
+  scale_fill_continuous(limits=c(-1000, 0), breaks = seq(-1000, 0, by= 500)) +
   #geom_path(data = data_new, aes(x = long_dec, y = lat_dec, group = station, color = catch_bin), arrow = arrow(type = "closed", length = unit(0.2, "cm")), linewidth = 0.6) +
   #scale_color_manual(values = my_col) +
   geom_sf(color = "gray25", fill = "gray90", data = countries) +
